@@ -100,13 +100,19 @@ public class CustomHashMap<K, V> {
     @SuppressWarnings("unchecked")
     private void resize() {
         Node<K, V>[] oldTable = table;
-        table = (Node<K, V>[]) new Node[oldTable.length * 2];
-        size = 0;
+        int newCapacity = oldTable.length * 2;
+        table = (Node<K, V>[]) new Node[newCapacity];
 
         for (Node<K, V> node : oldTable) {
             while (node != null) {
-                put(node.key, node.value);
-                node = node.next;
+                Node<K, V> nextNode = node.next; // Сохраняем ссылку на следующий узел
+                int newIndex = getIndex(node.key); // Пересчитываем индекс в новой таблице
+
+                // Вставляем узел в начало новой цепочки
+                node.next = table[newIndex];
+                table[newIndex] = node;
+
+                node = nextNode; // Переходим к следующему узлу в старой цепочке
             }
         }
     }
